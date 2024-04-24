@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Live Cam</title>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<body>
+
+    <!-- Use this if you only support Safari!!
+    <div id="player">
+        <video id="video" autoplay="true" controls="controls">
+            <source src="http://ip-address-of-web-server/live/mystream.m3u8" />
+            Your browser does not support HTML5 streaming!
+        </video>
+    </div>
+-->
+    <video id="video" autoplay="true" controls="controls"></video>
+    <script>
+
+        //"http://localhost:8010/recorders/recorders_66240466d4f0159411deffec/blida_camera_1ceba249-eba6-42a5-8f16-f574516d171c/output.m3u8
+        if (Hls.isSupported()) {
+            var video = document.getElementById('video');
+            var hls = new Hls();
+            // bind them together
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                console.log("video and hls.js are now bound together !");
+                hls.loadSource(`/recorders/recorders_66240466d4f0159411deffec/blida_camera_1ceba249-eba6-42a5-8f16-f574516d171c/output.m3u8`);
+                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                    console.log("manifest loaded, found " + data.levels.length + " quality level");
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>﻿

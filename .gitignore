@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Log files
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# Generated files
+dist/
+build/
+
+# Ignore all folders inside public/recorders
+public/recorders/*

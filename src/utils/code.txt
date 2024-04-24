@@ -1,0 +1,93 @@
+export const createStreamVideo = async (rtspUrl: string, output: string) => {
+  // Set the video output path
+  const videoOutputPath = `public/${output}`;
+
+  // Duration of each segment in seconds
+  const segmentDuration = 3;
+
+  // Number of segments to keep before starting over
+  const segmentWrap = 8;
+
+  // Interval for sending images to the API in seconds
+  const imageSendInterval = 5;
+
+  // Options for ffmpeg command
+  const options = [
+    "-v",
+    "verbose",
+    "-i",
+    rtspUrl,
+    "-vf",
+    "scale=1920:1080",
+    "-vcodec",
+    "libx264",
+    "-preset",
+    "ultrafast",
+    "-r",
+    "25",
+    "-b:v",
+    "100k",
+    "-crf",
+    "31",
+    "-acodec",
+    "aac",
+    "-sc_threshold",
+    "0",
+    "-f",
+    "hls",
+    "-hls_time",
+    segmentDuration.toString(), // Duration of each segment
+    "-segment_time",
+    segmentDuration.toString(), // Duration of each segment
+    "-segment_wrap",
+    segmentWrap.toString(), // Number of segments to keep before starting over
+    videoOutputPath, // Set the video output path
+  ];
+
+  const ffmpegProcess = spawn(`ffmpeg`, options);
+
+  let lastImageSentTime = 0;
+
+  ffmpegProcess.stdout.on("data", async (data: Buffer) => {
+    const currentTime = new Date().getTime() / 1000;
+    if (currentTime - lastImageSentTime >= imageSendInterval) {
+      console.log("--------->send image");
+
+      // const imageBuffer = Buffer.from(data, "binary");
+      // try {
+      //   const response = await axios.post(
+      //     "https://example.com/api/image",
+      //     imageBuffer,
+      //     {
+      //       headers: {
+      //         "Content-Type": "image/jpeg",
+      //         Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      //       },
+      //     }
+      //   );
+      //   console.log("Image sent successfully:", response.data);
+      //   lastImageSentTime = currentTime; // تحديث الوقت الأخير الذي تم فيه إرسال الصورة
+      // } catch (error) {
+      //   console.error("Failed to send image:", error);
+      // }
+    }
+  });
+
+  ffmpegProcess.stderr.on("data", (data: any) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  ffmpegProcess.on("error", (err: any) => {
+    console.error(`error: ${err.message}`);
+  });
+
+  ffmpegProcess.on("close", (code: number) => {
+    console.log(`child process exited with code ${code}`);
+  });
+
+  return {
+    success: true,
+    pid: ffmpegProcess.pid,
+    streamUrl: `http://localhost:8010/${output}`,
+  };
+};
