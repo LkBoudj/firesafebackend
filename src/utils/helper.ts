@@ -189,8 +189,8 @@ export const createStreamVideo = async (rtspUrl: string, output: string) => {
   });
 
   ffmpegProcess.stderr.on("data", (data: any) => {
-    var imageName = "image_" + Date.now() + "_.jpg";
-    fs.writeFileSync(imageName, data);
+    // var imageName = "image_" + Date.now() + "_.jpg";
+    // fs.writeFileSync(imageName, data);
     console.log("stderr errors ", data);
 
     // const currentTime = new Date().getTime() / 1000;
